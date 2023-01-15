@@ -8,39 +8,46 @@ import subprocess as sp
 import time
 import curses
 import sys,traceback
-from curses import wrapper
 
-#Start banner
+# Start banner
 os.system("cat src/banner.txt | lolcat")
-###
+
 
 def main():
     try:
 
         #Splash screen with iface info and current ip
 
-        def splash():
+        def info_splash():
             current_iface = os.popen("route | awk '/Iface/{getline; print $8}'").read()
             current_addr  = os.popen("ip route get 1.2.3.4 | awk '{print $7}'").read()
             current_ssid  = os.popen("iwgetid -r").read()
-            print("[Info → ] Current Interface:", current_iface) 
-            print("[Info → ] Current SSID:", current_ssid) 
-            print("[Info → ] Current IP Address:", current_addr)
+            print(" " "\u001b[35;1m[➔ Info]: " "\u001b[0mCurrent Interface:",f"\u001b[33;1m{current_iface}")           
+            print(" " "\u001b[35;1m[➔ Info]: " "\u001b[0mCurrent SSID:", f"\u001b[33;1m{current_ssid}") 
+            print(" " "\u001b[35;1m[➔ Info]: " "\u001b[0mCurrent inet:", f"\u001b[33;1m{current_addr}")
 
         
         def shell():
-            splash()
+            commandlist = []
+            info_splash()
+            print(" " "\u001b[35m[Type Help to get a list of available commands]")
+            prompt = input(" " "\n" "\n"" \u001b[36;1msktr❯❯\u001b[0m ")
+
+        
+# Running main functions
 
         shell()
 
+# Interrupt Handling for CTRL-C
 
     except KeyboardInterrupt:
-        print("Exiting")
+        print("\n" "\n" " \u001b[31;1mExiting...")
+
 
 # Getting root privilages
 
 rootchk = os.getuid()
 if rootchk != 0:
-    print("Socketeer requires root. Try again with sudo")
+    sys.exit(" ""\u001b[31;1mPlease run Socketeer with Root Privilages")
 else:
     main()
