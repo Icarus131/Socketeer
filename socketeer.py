@@ -24,8 +24,8 @@ def main():
             current_addr  = os.popen("ip route get 1.2.3.4 | awk '{print $7}'").read()
             current_ssid  = os.popen("iwgetid -r").read()
             print("[Info → ] Current Interface:", current_iface) 
-            print("[Info → ] Current IP Address:", current_addr) 
-            print("[Info → ] Current SSID:", current_ssid)
+            print("[Info → ] Current SSID:", current_ssid) 
+            print("[Info → ] Current IP Address:", current_addr)
 
         
         def shell():
