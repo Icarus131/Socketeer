@@ -28,10 +28,40 @@ def main():
 
         
         def shell():
-            commandlist = []
+            
+            def scan():
+                a = "test"
+                return a
+
+            helpstr = '''\n\nAvailable Commands:            
+                            
+                            \u001b[33;1mhelp - Displays this help page
+
+                            \u001b[33;1mscan - Scans the current network for all devices
+
+                            \u001b[33;1mtarget - Set target device (format: target <ip>)
+
+                            \u001b[33;1mhtspoof - Redirect user to specific webpage
+
+                            \u001b[33;1mlog - View the active log of current network
+                      '''
+
+            cmdlist = ["help","scan","target","htspoof","log"]
             info_splash()
-            print(" " "\u001b[35m[Type Help to get a list of available commands]")
-            prompt = input(" " "\n" "\n"" \u001b[36;1msktr❯❯\u001b[0m ")
+            print(" " "\u001b[35m[Type help to get a list of available commands]")
+
+            while True:
+                prompt = input(" " "\n" "\n"" \u001b[36;1msktr❯❯\u001b[0m ") 
+                if prompt == "help":
+                    print(helpstr)
+                else:
+                    print(" " "\n" " \u001b[31;mInvalid Command")
+                prompt = input(" " "\n" "\n"" \u001b[36;1msktr❯❯\u001b[0m ")
+
+                for cmd in cmdlist:
+                    if prompt == cmd:
+                        scan()            
+                prompt = input(" " "\n" "\n"" \u001b[36;1msktr❯❯\u001b[0m ")
 
         
 # Running main functions
