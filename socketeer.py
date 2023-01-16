@@ -22,18 +22,25 @@ def main():
             current_iface = os.popen("route | awk '/Iface/{getline; print $8}'").read()
             current_addr  = os.popen("ip route get 1.2.3.4 | awk '{print $7}'").read()
             current_ssid  = os.popen("iwgetid -r").read()
-            print(" " "\u001b[35;1m[➔ Info]: " "\u001b[0mCurrent Interface:",f"\u001b[33;1m{current_iface}")           
+            print(" " "\u001b[35;1m[➔ Info]: " "\u001b[0mCurrent Interface:",f"\u001b[33;1m{current_iface}") 
             print(" " "\u001b[35;1m[➔ Info]: " "\u001b[0mCurrent SSID:", f"\u001b[33;1m{current_ssid}") 
             print(" " "\u001b[35;1m[➔ Info]: " "\u001b[0mCurrent inet:", f"\u001b[33;1m{current_addr}")
 
         
         def shell():
             
+ 
             def scan():
-                a = "test"
-                return a
+                return "scan"
+            def target():
+                return "target"
+            def htspoof():
+                return "htspoof"
+            def log():
+                return "log"
 
-            helpstr = '''\n\nAvailable Commands:            
+            def commands():
+                helpstr = '''\n\n Available Commands:           
                             
                             \u001b[33;1mhelp - Displays this help page
 
@@ -44,25 +51,25 @@ def main():
                             \u001b[33;1mhtspoof - Redirect user to specific webpage
 
                             \u001b[33;1mlog - View the active log of current network
-                      '''
+                           
+                           '''
+                print(helpstr)  
 
-            cmdlist = ["help","scan","target","htspoof","log"]
+            cmdlist = {"scan":scan,"target":target,"htspoof":htspoof,"log":log,"commands":commands}
+
             info_splash()
-            print(" " "\u001b[35m[Type help to get a list of available commands]")
 
+            print(" " '\u001b[35m[Type "commands" to get a list of available commands]')
+            
             while True:
-                prompt = input(" " "\n" "\n"" \u001b[36;1msktr❯❯\u001b[0m ") 
-                if prompt == "help":
-                    print(helpstr)
-                else:
-                    print(" " "\n" " \u001b[31;mInvalid Command")
                 prompt = input(" " "\n" "\n"" \u001b[36;1msktr❯❯\u001b[0m ")
+                
+                try:
+                    cmdlist[prompt]()
+                except:
+                    print("\n" " " "\u001b[31;1mInvalid Command") 
 
-                for cmd in cmdlist:
-                    if prompt == cmd:
-                        scan()            
-                prompt = input(" " "\n" "\n"" \u001b[36;1msktr❯❯\u001b[0m ")
-
+                
         
 # Running main functions
 
@@ -72,6 +79,7 @@ def main():
 
     except KeyboardInterrupt:
         print("\n" "\n" " \u001b[31;1mExiting...")
+        time.sleep(0.5)
 
 
 # Getting root privilages
