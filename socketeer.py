@@ -6,7 +6,6 @@
 import os
 import subprocess as sp
 import time
-import curses
 import sys,traceback
 
 # Start banner
