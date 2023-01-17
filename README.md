@@ -1,4 +1,5 @@
 # Socketeer
+![GitHub](https://img.shields.io/github/license/Icarus131/Socketeer) ![GitHub commit activity](https://img.shields.io/github/commit-activity/m/Icarus131/Socketeer)
 
 ## What is Socketeer
 
