@@ -25,3 +25,5 @@ sudo python3 socketeer.py
 ```
 
 ## License
+
+```MIT License```
