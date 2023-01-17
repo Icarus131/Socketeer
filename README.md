@@ -16,7 +16,7 @@ sudo python3 install.py
 ```
 
 ### Preview
-<img>src/preview/socketeer.png</img>
+![socketeer](https://user-images.githubusercontent.com/46900041/212801138-395d2cc2-4fed-432d-b0f1-721812a896e4.png)
 
 ### Usage
 
