@@ -2,14 +2,14 @@
 #Author: Icarus (www.icarus.tk)
 #This file is a part of Socketeer
 
-
+import sys, traceback
 import os
 import subprocess as sp
 import time
-import sys,traceback
 
 # Start banner
 os.system("cat src/banner.txt | lolcat")
+
 
 
 def main():
@@ -24,20 +24,24 @@ def main():
             print(" " "\u001b[35;1m[➔ Info]: " "\u001b[0mCurrent Interface:",f"\u001b[33;1m{current_iface}") 
             print(" " "\u001b[35;1m[➔ Info]: " "\u001b[0mCurrent SSID:", f"\u001b[33;1m{current_ssid}") 
             print(" " "\u001b[35;1m[➔ Info]: " "\u001b[0mCurrent inet:", f"\u001b[33;1m{current_addr}")
-
-        
-        def shell():
             
- 
-            def scan():
-                return "scan"
-            def target():
-                return "target"
-            def htspoof():
-                return "htspoof"
-            def log():
-                return "log"
+        def scan():
+            current_addr  = os.popen("ip route get 1.2.3.4 | awk '{print $7}'").read()
+            scanout = os.system(f"nmap {current_addr}+'/24'")
+            print(" "+scanout)
 
+        def target():
+            with open('src/target.txt', 'w') as targetf:
+                targetip = input("\n" " " "\u001b[34;1mEnter the target IP address: ")
+                targetf.write(targetip)
+            
+        def htspoof():
+            return "ht"
+        def log():
+            return "log"
+
+        def shell():
+ 
             def commands():
                 helpstr = '''\n\n Available Commands:           
                             
