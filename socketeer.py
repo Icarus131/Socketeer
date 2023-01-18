@@ -50,18 +50,16 @@ def main():
             if os.path.getsize('src/target.txt') == 0:
                 print("\n" " " "\u001b[35;1m[➔ Alert]:" " " "\u001b[31;1mYou have to set your target IP first!")
             else:
-                target = os.popen("cat src/target.txt").read()
                 with open('src/target.txt', 'r') as targetf:
                     print(" " "\u001b[35;1m[➔ Info]: " "Running ARP Spoofing...")
                     time.sleep(0.5)
                     ettercommand = ("sudo ettercap -Tq -M ARP")
-                    for ip in targetf.readlines():
-                        print(ettercommand+ip)
-                        if ip == 1:
-                            sp.Popen(f"sudo ettercap -Tq -M ARP /{ip}//")
-                        else:
-                            sp.Popen(ettercommand+ipform)
-                            print(ettercommand+ipform)
+                    with open('src/arp.txt','r') as arp:
+                        iplist = [ip for ip in targetf]
+                        ipstring = (' '.join(iplist))
+                        print(ipstring)
+                        arp.write(ettercommand+ " "+ipstring)
+                            
 
                     targetf.truncate(0)
  
