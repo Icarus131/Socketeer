@@ -89,12 +89,9 @@ def response(flow):
                 
 
                 ''')
-                try:
-                    os.popen("mitmdump -s src/dumpscript.py")
-                    open('src/dumpscript.py/','w').close()
-                except:
-                    print("\n" " " "\u001b[35;1m[➔ Alert]: "  "Mitmdump error")
-                    os.popen("mitmdump -s src/dumpscript.py").read()
+            mitmdump = os.system("mitmdump -s src/dumpscript.py")
+            print(" ",mitmdump, sep=" ")
+       
         def portal():
             return "Portal command success - incomplete"
         
