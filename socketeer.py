@@ -9,8 +9,8 @@ import time
 import re
 
 # Start banner
-os.system("cat src/banner.txt | lolcat")
-
+os.chdir("/opt/socketeer")
+os.system("python3 src/banner.py | lolcat")
 
 def main():
     try:
